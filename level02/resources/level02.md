@@ -27,7 +27,7 @@ Scanning through the output, a clear hardcoded string instantly stands out as th
 ```bash
 $ su level03
 Password: qi0mauch9ahksha8b6dfe3p0kq
-level02@snowcrash:~$
+level03@snowcrash:~$
 ```
 
 **Flag / Password :** `qi0mauch9ahksha8b6dfe3p0kq`
